@@ -6,6 +6,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Button, TextInput, StatusBar, StyleSheet, Text, View, KeyboardAvoidingView, Platform } from 'react-native'; 
 import { signUp, login } from './src/services/auth';
 
+import SignUpScreen from './src/screens/SignUpScreen';
+
+
 
 
 const Stack = createStackNavigator(); //pile de navigation, allez retour entre les pages
@@ -32,13 +35,7 @@ function LoginScreen({ navigation }) {
 
 // fonction qui va permettre de creer un compte
   const handleSignUp = async () => {
-    const result = await signUp(email, password);
-    if (!result.success) {
-      alert(result.error);
-    } else {
-      alert("User Created");
-      navigation.navigate('Home');
-    }
+    navigation.navigate('SignUp');
   }
   
 // fonction qui va permettre de se connecter
@@ -48,7 +45,7 @@ function LoginScreen({ navigation }) {
     if (!result.success) {
       alert(result.error);
     } else {
-      alert("User Logged In");
+      
       navigation.navigate('Home');
     }
   }
@@ -90,6 +87,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
