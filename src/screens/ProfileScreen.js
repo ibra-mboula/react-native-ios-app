@@ -10,6 +10,18 @@ function ProfileScreen() {
     const [userDetails, setUserDetails] = useState(null);
 
     useEffect(() => {
+
+        const fetchUserRecipes = async () => {
+            try {
+              const userRecipes = await getDocs(query(collection(db, 'recipes'), where('userId', '==', auth.currentUser.uid)));
+              // Puis affichez ces recettes dans le profil de l'utilisateur
+            } catch (error) {
+              console.error("Error fetching user recipes:", error);
+            }
+          }
+        
+          fetchUserRecipes();
+          
         const fetchAllUsers = async () => {
             try {
                 const users = await getAllUsers();
