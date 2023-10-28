@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState,useContext  } from 'react';
 import { View, TextInput, Button, StyleSheet } from 'react-native';
 import { signUp } from '../services/auth';
 import { collection, addDoc } from "firebase/firestore";
 import { db } from '../services/firebaseConfig';
+import UserContext from '../services/UserContext';
+
 
 function SignUpScreen({ navigation }) {
     const [name, setName] = useState('');
@@ -10,25 +12,34 @@ function SignUpScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    //ce qui se passe quand on clique sur le bouton s'inscrire
+    const { setUser } = useContext(UserContext); 
+
+
+
     const handleSignUp = async () => {
-        const result = await signUp(email, password);
+        const emailToSave = email.toLowerCase();
+        const result = await signUp(emailToSave, password);
         if (!result.success) {
             alert(result.error);
         } else {
-            // Ajout d'un nouvel utilisateur à Firestore sans spécifier d'ID
             try {
                 await addDoc(collection(db, "users"), {
                     name: name,
                     category: category,
-                    email: email
+                    email: emailToSave
                 });
-                navigation.navigate('Home');
+                setUser({
+                    name: name,
+                    category: category,
+                    email: emailToSave
+                });
+                navigation.navigate('MyHome');
             } catch (error) {
                 console.error("Erreur lors de l'enregistrement des données :", error);
                 alert("Erreur lors de l'enregistrement des données : " + error.message);
             }
         }
+        navigation.navigate('Login');
     };
 
     return (

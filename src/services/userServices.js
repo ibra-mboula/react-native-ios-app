@@ -1,22 +1,29 @@
-import { getFirestore, doc, getDoc } from "firebase/firestore";
-import { getAuth } from 'firebase/auth';
-import app from './firebaseConfig';
+import { db } from './firebaseConfig';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
-const db = getFirestore(app);
-const auth = getAuth(app);
+export const getUserDetailsByEmail = async (email) => {
+    const emailToQuery = email.toLowerCase(); // Convertir l'email en minuscules
+    const userCollection = collection(db, 'users');
+    const q = query(userCollection, where("email", "==", emailToQuery));
 
-// Fonction pour récupérer les informations d'un utilisateur depuis Firestore
-export const getUserData = async (userId) => {
-  try {
-    const userRef = doc(db, "users", userId);
-    const userDoc = await getDoc(userRef);
-
-    if (userDoc.exists()) {
-      return { success: true, data: userDoc.data() };
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+        const user = querySnapshot.docs[0].data();
+        console.log("Fetched user details:", user);
+        return user;
     } else {
-      return { success: false, error: 'User not found' };
+        console.log("No details found for email:", emailToQuery); // Utilisez emailToQuery pour le log
+        return null;
     }
-  } catch (error) {
-    return { success: false, error: error.message };
-  }
-};
+}
+
+export const getAllUsers = async () => {
+    const userCollection = collection(db, 'users');
+    const querySnapshot = await getDocs(userCollection);
+    return querySnapshot.docs.map(doc => doc.data());
+}
+
+
+
+
+

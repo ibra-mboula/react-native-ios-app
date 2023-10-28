@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; 
+import React, { useState, useContext  } from 'react'; 
 //pour gerer la navigation entre les pages
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
