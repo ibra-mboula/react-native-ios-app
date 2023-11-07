@@ -3,19 +3,25 @@ import { View, Text, TextInput, Button, StyleSheet, Alert, Image } from 'react-n
 import { addDoc, collection } from "firebase/firestore";
 import { db } from '../services/firebaseConfig';
 import * as ImagePicker from 'expo-image-picker';
-import * as Permissions from 'expo-permissions';
+
 import { storage } from '../services/firebaseConfig';
+import { auth } from "../services/firebaseConfig";
+import * as Camera from 'expo-camera';
+
+
 
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 function AddRecipeScreen() {
   const [image, setImage] = useState(null);
+  const [name, setName] = useState("");
   const [prepTime, setPrepTime] = useState("");
   const [ingredients, setIngredients] = useState("");
   const [category, setCategory] = useState("");
 
   const pickImage = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
     if (status !== 'granted') {
       alert('Sorry, we need camera roll permissions to make this work!');
       return;
@@ -34,7 +40,8 @@ function AddRecipeScreen() {
   };
 
   const takePhoto = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    const { status } = await Camera.requestCameraPermissionsAsync();
+
     if (status !== 'granted') {
       alert('Sorry, we need camera permissions to make this work!');
       return;
@@ -82,9 +89,11 @@ function AddRecipeScreen() {
       try {
         await addDoc(collection(db, "recipes"), {
           image: imageUrl,
+          name,
           prepTime,
           ingredients: ingredients.split('\n'),
-          category
+          category,
+          userId: auth.currentUser.uid
         });
         Alert.alert("Success!", "Your recipe has been added successfully.");
       } catch (error) {
@@ -101,12 +110,21 @@ function AddRecipeScreen() {
       <Button title="Pick an image" onPress={pickImage} />
       <Button title="Take a photo" onPress={takePhoto} />
       {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+
+      <TextInput 
+        style={styles.input} 
+        placeholder="name of the recipe"
+        onChangeText={setName}
+        value={name}
+      />
+
       <TextInput 
         style={styles.input} 
         placeholder="Preparation time"
         onChangeText={setPrepTime}
         value={prepTime}
       />
+
       <TextInput 
         style={[styles.input, { height: 100 }]} 
         placeholder="Ingredients (separated by new lines)"
