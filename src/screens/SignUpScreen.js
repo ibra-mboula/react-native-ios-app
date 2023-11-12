@@ -1,5 +1,5 @@
 import React, { useState,useContext  } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+import { View, TextInput, Button, StyleSheet,ScrollView } from 'react-native';
 import { signUp } from '../services/auth';
 import { collection, addDoc } from "firebase/firestore";
 import { db } from '../services/firebaseConfig';

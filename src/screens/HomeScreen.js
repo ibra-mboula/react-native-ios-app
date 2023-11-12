@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../services/firebaseConfig';
-import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { db, auth } from '../services/firebaseConfig';
+import { collection, query, where, onSnapshot, doc, updateDoc, setDoc, deleteDoc, getDoc  } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
-import {
-  ScrollView, View, Text, StyleSheet, Image, TouchableOpacity,
-} from 'react-native';
+import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 function HomeScreen() {
   const [publishedRecipes, setPublishedRecipes] = useState([]);
@@ -17,7 +15,20 @@ function HomeScreen() {
       querySnapshot.forEach((doc) => {
         recipes.push({ id: doc.id, ...doc.data() });
       });
-      setPublishedRecipes(recipes);
+
+      if (auth.currentUser) {
+        const favoritesQuery = query(collection(db, 'favorites'), where('userId', '==', auth.currentUser.uid));
+        onSnapshot(favoritesQuery, (querySnapshot) => {
+          const favoriteIds = querySnapshot.docs.map(doc => doc.data().recipeId);
+          const updatedRecipes = recipes.map(recipe => ({
+            ...recipe,
+            isFavorite: favoriteIds.includes(recipe.id)
+          }));
+          setPublishedRecipes(updatedRecipes);
+        });
+      } else {
+        setPublishedRecipes(recipes);
+      }
     }, (error) => {
       console.error("Failed to fetch recipes:", error);
     });
@@ -26,29 +37,43 @@ function HomeScreen() {
   }, []);
 
   const handleFavoritePress = async (recipe) => {
+    if (!auth.currentUser) {
+      console.error("No user logged in");
+      return;
+    }
+  
     try {
-      const recipeRef = doc(db, 'recipes', recipe.id);
-      await updateDoc(recipeRef, {
-        isFavorite: !recipe.isFavorite // Toggle the isFavorite state
-      });
-      // Update the local state to reflect the change
+      const favoriteId = `${auth.currentUser.uid}_${recipe.id}`;
+      const favoriteRef = doc(db, 'favorites', favoriteId);
+  
+      if (recipe.isFavorite) {
+        await deleteDoc(favoriteRef);
+      } else {
+        await setDoc(favoriteRef, {
+          userId: auth.currentUser.uid,
+          recipeId: recipe.id
+        });
+      }
+  
       setPublishedRecipes(publishedRecipes.map(r => {
-        return r.id === recipe.id ? { ...r, isFavorite: !r.isFavorite } : r;
+        if (r.id === recipe.id) {
+          return { ...r, isFavorite: !r.isFavorite };
+        }
+        return r;
       }));
+  
       console.log("Favorite state toggled for recipe:", recipe.name);
     } catch (error) {
       console.error("Failed to toggle favorite state for recipe:", error);
     }
   };
+  
 
   return (
     <ScrollView>
       {publishedRecipes.map((recipe) => (
         <View key={recipe.id} style={styles.recipeContainer}>
           <View style={styles.recipeContent}>
-            
-            {/*<Text>Publié par: {recipe.userName}</Text> */}
-            
             <Text style={styles.recipeName}>{recipe.name}</Text>
             {recipe.image && <Image source={{ uri: recipe.image }} style={styles.recipeImage} />}
             <Text style={styles.category}>{recipe.category}</Text>
@@ -76,9 +101,6 @@ const styles = StyleSheet.create({
   recipeContent: {
     flex: 1
   },
-  ownerName: {
-    fontWeight: 'bold'
-  },
   recipeName: {
     fontSize: 18
   },
@@ -98,4 +120,5 @@ const styles = StyleSheet.create({
     padding: 10
   }
 });
+
 export default HomeScreen;

@@ -6,11 +6,25 @@ import { getUserDetailsByEmail, getAllUsers } from '../services/userServices';
 import { auth, db } from '../services/firebaseConfig';
 import { doc, deleteDoc, getDocs, query, collection, where, updateDoc } from 'firebase/firestore';
 
+import { useNavigation } from '@react-navigation/native';
+import { signOut } from 'firebase/auth';
+
 function ProfileScreen() {
   const [userDetails, setUserDetails] = useState(null);
   const [userRecipes, setUserRecipes] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editableRecipe, setEditableRecipe] = useState(null);
+
+  const navigation = useNavigation();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      navigation.navigate('Login'); 
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
+  };
 
   useEffect(() => {
     const fetchUserDetailsAndRecipes = async () => {
@@ -153,7 +167,7 @@ function ProfileScreen() {
           />
         ))}
   
-        {/* Add more input fields for editing other recipe attributes as needed */}
+       
         <Button title="Save" onPress={saveRecipe} />
         <Button title="Cancel" onPress={cancelEdit} />
       </View>
@@ -162,6 +176,8 @@ function ProfileScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.contentContainer} style={styles.container}>
+
+    <Button title="Sign Out" onPress={handleSignOut} />
       {/* User details */}
       <Text style={styles.header}>Account Details</Text>
       <Text>Name: {userDetails.name}</Text>
