@@ -66,7 +66,7 @@ function AddRecipeScreen() {
 
       uploadTask.on('state_changed', 
         (snapshot) => {
-          // ...
+          // 
         }, 
         (error) => {
           console.error("Upload failed:", error);

@@ -5,24 +5,34 @@ import { Ionicons } from '@expo/vector-icons';
 import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 function HomeScreen() {
+  
+    // Définition d'un état local pour stocker les recettes publiées
   const [publishedRecipes, setPublishedRecipes] = useState([]);
 
+// Utilisation de useEffect pour charger et écouter les changements dans les recettes
   useEffect(() => {
+    // Création d'une requête pour récupérer les recettes publiées
     const q = query(collection(db, 'recipes'), where('published', '==', true));
 
+    // pour recevoir les mises à jour en temps réel, on utilise la fonction onSnapshot
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const recipes = [];
-      querySnapshot.forEach((doc) => {
-        recipes.push({ id: doc.id, ...doc.data() });
+      querySnapshot.forEach((doc) => {// on parcourt les documents de la requête 
+
+        // Construction d'une liste de recettes à partir des données reçues
+        recipes.push({ id: doc.id, ...doc.data() }); // ...doc.data() permet de récupérer les données du document sous forme d'objet et de les ajouter dans le tableau recipes
       });
 
-      if (auth.currentUser) {
+      // Traitement des favoris si un utilisateur est connecté
+      if (auth.currentUser) { // si un utilisateur est connecté 
+        // Création d'une requête pour récupérer les favoris de l'utilisateur connecté
         const favoritesQuery = query(collection(db, 'favorites'), where('userId', '==', auth.currentUser.uid));
         onSnapshot(favoritesQuery, (querySnapshot) => {
+
           const favoriteIds = querySnapshot.docs.map(doc => doc.data().recipeId);
-          const updatedRecipes = recipes.map(recipe => ({
+          const updatedRecipes = recipes.map(recipe => ({ // on parcourt les recettes et on ajoute un attribut isFavorite à chaque recette
             ...recipe,
-            isFavorite: favoriteIds.includes(recipe.id)
+            isFavorite: favoriteIds.includes(recipe.id) // on vérifie si l'id de la recette est dans la liste des favoris
           }));
           setPublishedRecipes(updatedRecipes);
         });
@@ -31,9 +41,10 @@ function HomeScreen() {
       }
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe(); // on retourne la fonction unsubscribe pour arrêter l'écoute des changements
   }, []);
 
+  // Fonction pour gérer les clics sur les favoris
   const handleFavoritePress = async (recipe) => {
     if (!auth.currentUser) {
       console.error("No user logged in");
@@ -43,7 +54,8 @@ function HomeScreen() {
     try {
       const favoriteId = `${auth.currentUser.uid}_${recipe.id}`;
       const favoriteRef = doc(db, 'favorites', favoriteId);
-  
+
+      // Ajout ou suppression de la recette des favoris
       if (recipe.isFavorite) {
         await deleteDoc(favoriteRef);
       } else {
@@ -52,17 +64,18 @@ function HomeScreen() {
           recipeId: recipe.id
         });
       }
-  
+      
+      // Mise à jour de l'état local des recettes publiées
       setPublishedRecipes(publishedRecipes.map(r => {
-        if (r.id === recipe.id) {
+        if (r.id === recipe.id) { 
           return { ...r, isFavorite: !r.isFavorite };
         }
         return r;
       }));
   
-      console.log("Favorite state toggled for recipe:", recipe.name);
+      console.log("click:", recipe.name);
     } catch (error) {
-      console.error("Failed to toggle favorite state for recipe:", error);
+      console.error("click error :", error);
     }
   };
 

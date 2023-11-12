@@ -1,73 +1,63 @@
-import React, { useState, useContext  } from 'react'; 
-//pour gerer la navigation entre les pages
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
-import { Ionicons } from '@expo/vector-icons';
-
-
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View, Button, StatusBar, Image } from 'react-native';
-import { signUp, login } from '../services/auth';
-
-import SignUpScreen from '../screens/SignUpScreen';
-
-import { TouchableWithoutFeedback } from 'react-native';
+import React, { useState } from 'react'; 
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View, Button, StatusBar } from 'react-native';
+import { signUp, login } from '../services/auth'; // Nos fonctions pour s'inscrire et se connecter
 
 
 
+// Voici notre écran de connexion.
 function LoginScreen({ navigation }) {
+    // On utilise useState pour garder une trace de l'email et du mot de passe.
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
- 
-      const [email, setEmail] = useState('');
-      const [password, setPassword] = useState('');
-    
-    
-      const handleSignUp = async () => {
+    // Fonction pour gérer l'inscription - on navigue vers l'écran d'inscription.
+    const handleSignUp = async () => {
         navigation.navigate('SignUp');
-      }
-      
-    
-      const handleLogin = async () => {
-        const result = await login(email, password);
-    
-        if (!result.success) {
-          alert(result.error);
-        } else {
-          
-          navigation.navigate('Main');
-        }
-      }
-    
-      return (
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.container}
-        >
-          <Text style={styles.title}>Bienvenue 👨🏾‍🍳</Text>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Mot de passe"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-          <View style={styles.buttonContainer}>
-            <Button title="S'inscrire" onPress={handleSignUp} color="#D591FF" />
-            <Button title="Se connecter" onPress={handleLogin} color="#32CD32" />
-          </View>
-          <StatusBar style="auto" />
-        </KeyboardAvoidingView>
-      );
     }
-    
+  
+    // gérer la connexion - on utilise notre fonction login du service auth.js
+    const handleLogin = async () => {
+        const result = await login(email, password); 
+
+        // Si la connexion échoue, on affiche une alerte.
+        if (!result.success) {
+            alert(result.error);
+        } else {
+            // Si la connexion réussit, on navigue vers l'écran principal.
+            navigation.navigate('Main'); 
+        }
+    }
+
+    // partie visible de notre écran, le JSX.
+    return (
+        // KeyboardAvoidingView, pour éviter que le clavier ne cache nos champs de saisie.
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.container}
+        >
+            <Text style={styles.title}>Bienvenue 👨🏾‍🍳</Text>
+            {/* Des champs de saisie pour l'email et le mot de passe */}
+            <TextInput
+                style={styles.input}
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Mot de passe"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+            />
+            <View style={styles.buttonContainer}>
+                <Button title="S'inscrire" onPress={handleSignUp} color="#D591FF" />
+                <Button title="Se connecter" onPress={handleLogin} color="#32CD32" />
+            </View>
+            <StatusBar style="auto" />
+        </KeyboardAvoidingView>
+    );
+}
     const styles = StyleSheet.create({
       container: {
         flex: 1,

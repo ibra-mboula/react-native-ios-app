@@ -56,6 +56,7 @@ function MyTabs() {
         <Tab.Screen name="Profile" component={ProfileScreen} />
         
         <Tab.Screen name="Search" component={SearchScreen} />
+        
         <Tab.Screen name="Favorites" component={FavoritesScreen} />
       
       </Tab.Navigator>
