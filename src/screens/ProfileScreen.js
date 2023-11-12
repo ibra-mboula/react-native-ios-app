@@ -79,7 +79,7 @@ function ProfileScreen() {
     setEditableRecipe(prev => ({ ...prev, [name]: value }));
   };
 
-    // Fonction pour modifier un ingrédient spécifique
+  
     const handleIngredientChange = (index, value) => {
         setEditableRecipe(prev => {
           const newIngredients = [...prev.ingredients];
@@ -119,6 +119,17 @@ function ProfileScreen() {
     }
   };
 
+  const getCategoryStyleAndEmoji = (category) => {
+    switch (category) {
+      case 'car':
+        return { style: styles.categoryCar, emoji: '🥩' };
+      case 'veg':
+        return { style: styles.categoryVeg, emoji: '🥦' };
+      default:
+        return { style: {}, emoji: '' };
+    }
+  };
+
   if (!userDetails) {
     return <Text>Loading...</Text>;
   }
@@ -127,7 +138,7 @@ function ProfileScreen() {
     return (
       <View style={styles.editContainer}>
 
-        {/* TextInput for editing Name */}
+      
         <Text style={styles.label}>Name:</Text>
         <TextInput
           style={styles.input}
@@ -136,7 +147,7 @@ function ProfileScreen() {
           placeholder="Recipe Name"
         />
   
-        {/* TextInput for editing prepTime */}
+    
         <Text style={styles.label}>prepTime:</Text>
         <TextInput
           style={styles.input}
@@ -145,7 +156,7 @@ function ProfileScreen() {
           placeholder="Preparation Time"
         />
         
-        {/* TextInput for editing category */}
+       
         <Text style={styles.label}>category:</Text>
         <TextInput
             style={styles.input}
@@ -155,7 +166,7 @@ function ProfileScreen() {
         />
         
   
-        {/* TextInput for editing Ingredient */}
+    
         <Text style={styles.label}>Ingredients:</Text>
         {editableRecipe.ingredients.map((ingredient, index) => (
           <TextInput
@@ -175,63 +186,50 @@ function ProfileScreen() {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.contentContainer} style={styles.container}>
-
-    <Button title="Sign Out" onPress={handleSignOut} />
-      {/* User details */}
-      <Text style={styles.header}>Account Details</Text>
-      <Text>Name: {userDetails.name}</Text>
-      <Text>Category: {userDetails.category}</Text>
+    <ScrollView style={styles.container}>
+      <View style={styles.headerContainer}>
+        <Text style={styles.header}>Account Details</Text>
+        <Button title="Sign Out" onPress={handleSignOut} style={styles.signOutButton} />
+      </View>
+      <View style={styles.userDetails}>
+        <Text style={styles.detailText}>Name: {userDetails.name}</Text>
+      </View>
       <View style={styles.line} />
 
-      {/* List of recipes */}
-      {userRecipes.map((recipe, index) => (
-        <View key={recipe.id} style={styles.recipeContainer}>
-          <Text style={styles.recipeTitle}>{recipe.name}</Text>
-
-
-                    {/* Display the image */}
-                    {recipe.image && (
-                        <Image
-                            source={{ uri: recipe.image }}
-                            style={styles.image}
-                            onError={(e) => console.log('Image loading error:', e.nativeEvent.error)}
-                        />
-                    )}
-
-                    <Text>Temps de préparation: {recipe.prepTime}</Text>
-                    <Text>Catégorie: {recipe.category}</Text>
-                    <Text>Ingrédients:</Text>
-                    {recipe.ingredients.map((ingredient, ingIndex) => (
-                        <Text key={ingIndex}>- {ingredient}</Text>
-                    ))}
-          
-
-
-           {/* Edit and Delete buttons */}
-          <View style={styles.buttonContainer}>
-
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => startEditRecipe(recipe)}>
-              <Text>Edit</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => deleteRecipe(recipe.id)}>
-              <Text>Delete</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-            style={styles.button}
-            onPress={() => publishRecipe(recipe.id)}>
-            <Text>Publish</Text>
-          </TouchableOpacity>
-
+      {userRecipes.map((recipe) => {
+        const { style: categoryStyle, emoji: categoryEmoji } = getCategoryStyleAndEmoji(recipe.category);
+        return (
+          <View key={recipe.id} style={styles.recipeCard}>
+            {recipe.image && <Image source={{ uri: recipe.image }} style={styles.image} />}
+            <View style={styles.recipeInfo}>
+              <Text style={styles.recipeTitle}>{recipe.name}</Text>
+              <Text style={[styles.category, categoryStyle]}>Category: {recipe.category} {categoryEmoji}</Text>
+              <Text style={styles.prep_} >Prep Time: {recipe.prepTime}</Text>
+              <Text>Ingredients:</Text>
+              {recipe.ingredients.map((ingredient, ingIndex) => (
+                <Text key={ingIndex} style={styles.ingredient}>- {ingredient}</Text>
+              ))}
+            </View>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[styles.button, styles.editButton]}
+                onPress={() => startEditRecipe(recipe)}>
+                <Text>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.deleteButton]}
+                onPress={() => deleteRecipe(recipe.id)}>
+                <Text>Delete</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.publishButton]}
+                onPress={() => publishRecipe(recipe.id)}>
+                <Text>Publish</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      ))}
+        );
+      })}
     </ScrollView>
   );
 }
@@ -254,10 +252,11 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: '#dddddd',
     padding: 10,
     width: '80%',
     marginBottom: 10,
+    borderRadius: 5,
   },
   header: {
     fontSize: 20,
@@ -266,36 +265,102 @@ const styles = StyleSheet.create({
   },
   line: {
     height: 1,
-    backgroundColor: 'black',
+    backgroundColor: '#e0e0e0',
     width: '100%',
     marginVertical: 10,
   },
   recipeContainer: {
     borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: '#dddddd',
     padding: 10,
     marginBottom: 10,
     width: '100%',
+    borderRadius: 5,
   },
   recipeTitle: {
     fontSize: 16,
     fontWeight: 'bold',
+    marginBottom: 5,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 10,
   },
   button: {
     padding: 10,
-    backgroundColor: 'lightblue',
+    backgroundColor: '#4CAF50',
     borderRadius: 5,
     margin: 5,
   },
   image: {
-    width: 100,
-    height: 100,
+    width: '100%',
+    height: 200,
     marginVertical: 10,
-},
+    borderRadius: 10,
+  },
+  category: {
+    fontStyle: 'italic',
+    marginBottom: 5,
+  },
+  categoryCar: {
+    color: 'red',
+  },
+  categoryVeg: {
+    color: 'green',
+  },
+  signOutButton: {
+    backgroundColor: '#f44336',
+    padding: 10,
+    borderRadius: 5,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  detailText: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  editButton: {
+    backgroundColor: '#FEDB91', 
+  },
+  deleteButton: {
+    backgroundColor: '#FF7373', 
+  },
+  publishButton: {
+    backgroundColor: '#54BBFF', 
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+  },
+  recipeCard: {
+    backgroundColor: '#f9f9f9',
+    borderRadius: 10,
+    padding: 15,
+    marginVertical: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  recipeInfo: {
+    padding: 10,
+  },
+  ingredient: {
+    fontSize: 14,
+    marginLeft: 10,
+  },
+  prep_: {
+    marginBottom: 10,
+    color: 'gray',
+    fontWeight: 'bold',
+
+  },
 
 });
 

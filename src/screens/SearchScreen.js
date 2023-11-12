@@ -35,17 +35,27 @@ function SearchScreen() {
     }
   };
 
+  const getCategoryEmoji = (category) => {
+    switch (category) {
+      case 'veg':
+        return '🥦';
+      case 'car':
+        return '🥩';
+      default:
+        return '';
+    }
+  };
+
   return (
     <View style={styles.container}>
-
       <View style={styles.buttonContainer}>
         <Button
-          title="Veg"
+          title="Veg 🥦"
           color={isVegSelected ? 'green' : 'grey'}
           onPress={() => setIsVegSelected(!isVegSelected)}
         />
         <Button
-          title="Car"
+          title="Car 🥩"
           color={isCarSelected ? 'green' : 'grey'}
           onPress={() => setIsCarSelected(!isCarSelected)}
         />
@@ -55,8 +65,7 @@ function SearchScreen() {
         <ScrollView>
           {recipes.map(recipe => (
             <View key={recipe.id} style={styles.recipeContainer}>
-              <Text style={styles.recipeName}>{recipe.name}</Text>
-              
+              <Text style={styles.recipeName}>{recipe.name} {getCategoryEmoji(recipe.category)}</Text>
             </View>
           ))}
         </ScrollView>
@@ -64,25 +73,36 @@ function SearchScreen() {
     </View>
   );
 }
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
 
-    input: {
-  
-      width: '80%',
-      height: 40,
-      borderColor: 'gray',
-      borderWidth: 1,
-      marginBottom: 20,
-      paddingHorizontal: 10,
-      borderRadius: 10, 
-  
-    },
-  });
+const styles = StyleSheet.create({
+  container: {
+    
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  buttonContainer: {
+    marginTop: 50,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginBottom: 20,
+  },
+  recipeContainer: {
+    
+    backgroundColor: '#f9f9f9',
+    padding: 10,
+    borderRadius: 10,
+    marginVertical: 5,
+    width: '100%',
+  },
+  recipeName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
+});
 
 export default SearchScreen;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Keyboard ,View, Text, TextInput, Button, StyleSheet, Alert, Image, KeyboardAvoidingView, Platform,ScrollView,TouchableWithoutFeedback  } from 'react-native';
+import { Keyboard ,View, Text, TextInput, Button, StyleSheet, Alert, Image, KeyboardAvoidingView, Platform,ScrollView,TouchableWithoutFeedback,TouchableOpacity  } from 'react-native';
 import { addDoc, collection } from "firebase/firestore";
 import { db } from '../services/firebaseConfig';
 import * as ImagePicker from 'expo-image-picker';
@@ -103,57 +103,36 @@ function AddRecipeScreen() {
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-    
-
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
       <ScrollView style={styles.scrollView}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View style={styles.innerContainer}>
-          
-          <Button title="Add Recipe" onPress={addRecipe} />
-          <Button title="Pick an image" onPress={pickImage} />
-          <Button title="Take a photo" onPress={takePhoto} />
-          {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 
-          <TextInput 
-            style={styles.input} 
-            placeholder="Name of the recipe"
-            onChangeText={setName}
-            value={name}
-          />
-          
-          <TextInput 
-            style={styles.input} 
-            placeholder="Preparation time"
-            onChangeText={setPrepTime}
-            value={prepTime}
-          />
+          <View style={styles.innerContainer}>
+            {image && <Image source={{ uri: image }} style={styles.imagePreview} />}
 
-          <TextInput 
-            style={[styles.input, { height: 100 }]} 
-            placeholder="Ingredients (separated by new lines)"
-            multiline
-            onChangeText={setIngredients}
-            value={ingredients}
-          />
+            <View style={styles.buttonGroup}>
+              <Button title="Pick an image" onPress={pickImage} color="#3498db" />
+              <Button title="Take a photo" onPress={takePhoto} color="#3498db" />
+  
+            </View>
 
-          {/* Liste déroulante pour la catégorie */}
-          
-            <Picker
-              selectedValue={category}
-              onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}
-              style={styles.picker}
-              mode="dialog"
-            >
-              <Picker.Item label="Select a category" value="" />
-              <Picker.Item label="Veg" value="veg" />
-              <Picker.Item label="Car" value="car" />
-            </Picker>
-          
-        </View>
+            <TouchableOpacity style={styles.addButton} onPress={addRecipe}>
+              <Text style={styles.buttonText}>Add Recipe</Text>
+            </TouchableOpacity>
+
+            <TextInput style={styles.input} placeholder="Name of the recipe" onChangeText={setName} value={name} />
+            <TextInput style={styles.input} placeholder="Preparation time" onChangeText={setPrepTime} value={prepTime} />
+            <TextInput style={[styles.input, styles.multiLineInput]} placeholder="Ingredients (separated by new lines)" multiline onChangeText={setIngredients} value={ingredients} />
+            
+            
+              <Picker selectedValue={category} onValueChange={(itemValue) => setCategory(itemValue)} style={styles.picker} mode="dialog">
+                <Picker.Item label="Select a category" value="" />
+                <Picker.Item label="Veg 🥦" value="veg" />
+                <Picker.Item label="Car 🥩" value="car" />
+              </Picker>
+            
+            
+          </View>
         </TouchableWithoutFeedback>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -171,56 +150,60 @@ const styles = StyleSheet.create({
   innerContainer: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20
+    justifyContent: 'flex-start',
+    padding: 20,
   },
   input: {
-    width: '100%',
+    width: '90%',
     height: 40,
-    borderColor: 'gray',
+    borderColor: '#3498db',
     borderWidth: 1,
     marginBottom: 20,
     paddingHorizontal: 10,
-    borderRadius: 10,
+    borderRadius: 5,
   },
-
-
+  multiLineInput: {
+    height: 100,
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginBottom: 20,
+  },
   imagePreview: {
-    width: 200, 
-    height: 200, 
-    marginVertical: 20
+    width: 100,
+    height: 100,
+    borderRadius: 20,
+    marginBottom: 20,
   },
   pickerContainer: {
     marginBottom: 20,
-    width: '100%',
-    borderRadius: 10,
-    borderColor: 'gray',
+    width: '90%',
+    borderRadius: 5,
+    borderColor: '#3498db',
     borderWidth: 1,
-    paddingHorizontal: 10,
-    backgroundColor: '#fff', 
+    backgroundColor: '#fff',
   },
   picker: {
-    width: '100%', 
-    height: 50, 
+    width: '100%',
+    height: 50,
   },
-  
-  button: {
-    backgroundColor: "#3498db",
+  addButton: {
+    backgroundColor: "#2ecc71", 
     paddingVertical: 15,
     paddingHorizontal: 25,
     borderRadius: 10,
-    marginTop: 20, 
+    width: '40%',
+    alignItems: 'center', 
+    marginBottom: 10,
   },
-  
   buttonText: {
     color: "#fff",
     textAlign: "center",
     fontWeight: "bold",
-    fontSize: 18, 
+    fontSize: 18,
   },
-
-
-
 });
 
 export default AddRecipeScreen;

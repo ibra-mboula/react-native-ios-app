@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { db, auth } from '../services/firebaseConfig';
-import { collection, query, where, onSnapshot, doc, updateDoc, setDoc, deleteDoc, getDoc  } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, doc, setDoc, deleteDoc } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
 import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
@@ -29,8 +29,6 @@ function HomeScreen() {
       } else {
         setPublishedRecipes(recipes);
       }
-    }, (error) => {
-      console.error("Failed to fetch recipes:", error);
     });
 
     return () => unsubscribe();
@@ -67,58 +65,113 @@ function HomeScreen() {
       console.error("Failed to toggle favorite state for recipe:", error);
     }
   };
-  
+
+  const getCategoryStyleAndEmoji = (category) => {
+    switch (category) {
+      case 'car':
+        return { style: styles.categoryCar, emoji: '🥩' };
+      case 'veg':
+        return { style: styles.categoryVeg, emoji: '🥦' };
+      default:
+        return { style: {}, emoji: '' };
+    }
+  };
 
   return (
-    <ScrollView>
-      {publishedRecipes.map((recipe) => (
-        <View key={recipe.id} style={styles.recipeContainer}>
-          <View style={styles.recipeContent}>
-            <Text style={styles.recipeName}>{recipe.name}</Text>
-            {recipe.image && <Image source={{ uri: recipe.image }} style={styles.recipeImage} />}
-            <Text style={styles.category}>{recipe.category}</Text>
-            {recipe.ingredients.map((ingredient, idx) => (
-              <Text key={idx} style={styles.ingredient}>- {ingredient}</Text>
-            ))}
-          </View>
-          <TouchableOpacity onPress={() => handleFavoritePress(recipe)} style={styles.favoriteButton}>
-            <Ionicons name={recipe.isFavorite ? 'star' : 'star-outline'} size={30} color='#FFDD44' />
-          </TouchableOpacity>
-        </View>
-      ))}
+    <ScrollView style={styles.scrollView}>
+      <View style={styles.gridContainer}>
+        {publishedRecipes.map((recipe) => {
+          const { style: categoryStyle, emoji: categoryEmoji } = getCategoryStyleAndEmoji(recipe.category);
+          return (
+            <View key={recipe.id} style={styles.recipeCard}>
+              <TouchableOpacity onPress={() => handleFavoritePress(recipe)} style={styles.favoriteButton}>
+                <Ionicons name={recipe.isFavorite ? 'star' : 'star-outline'} size={24} color='#FFDD44' />
+              </TouchableOpacity>
+              <Image source={{ uri: recipe.image }} style={styles.recipeImage} />
+              <View style={styles.recipeDetails}>
+                <Text style={styles.recipeName}>{recipe.name}</Text>
+                <Text style={[styles.category, categoryStyle]}>{recipe.category} {categoryEmoji}</Text>
+                {/* Autres détails de la recette ici, si nécessaire 
+                <View style={styles.ingredientsContainer}>
+                  {recipe.ingredients.slice(0, 2).map((ingredient, idx) => (
+                    <Text key={idx} style={styles.ingredient}>- {ingredient}</Text>
+                  ))}
+                  {recipe.ingredients.length > 2 && <Text style={styles.moreIngredients}>+ more...</Text>}
+                </View>*/}
+              </View>
+            </View>
+          );
+        })}
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  recipeContainer: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
+  scrollView: {
+    backgroundColor: '#FFF',
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
     padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc'
   },
-  recipeContent: {
-    flex: 1
-  },
-  recipeName: {
-    fontSize: 18
-  },
-  recipeImage: {
-    width: 100, 
-    height: 100,
-    borderRadius: 50,
-    marginVertical: 10
-  },
-  category: {
-    fontStyle: 'italic'
-  },
-  ingredient: {
-    fontSize: 16
+  recipeCard: {
+    backgroundColor: '#f9f9f9',
+    width: '45%',
+    marginVertical: 10,
+    borderRadius: 10,
+    padding: 10,
+    alignItems: 'center',
+    position: 'relative',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   favoriteButton: {
-    padding: 10
-  }
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1,
+  },
+  recipeImage: {
+    width: '100%',
+    height: 150,
+    borderRadius: 10,
+  },
+  recipeDetails: {
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  recipeName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  category: {
+    fontStyle: 'italic',
+  },
+  categoryCar: {
+    color: 'red',
+  },
+  categoryVeg: {
+    color: 'green',
+  },
+  ingredientsContainer: {
+    alignItems: 'flex-start',
+    alignSelf: 'stretch',
+  },
+  ingredient: {
+    fontSize: 14,
+  },
+  moreIngredients: {
+    fontSize: 14,
+    color: '#666',
+    fontStyle: 'italic',
+  },
+  
 });
 
 export default HomeScreen;
