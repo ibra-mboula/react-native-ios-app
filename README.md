@@ -21,9 +21,9 @@ Ce projet est une application mobile qui permet aux utilisateurs de partager et 
 - **Authentification**: Firebase
 - **Base de données**: Firestore
   
-<img src="https://github.com/ibra-mboula/IOT-LoRa-LoRaWAN/assets/78673312/90966a8d-7d95-4748-969c-d8111584787f" width="300" height="600">
-<img src="https://github.com/ibra-mboula/IOT-LoRa-LoRaWAN/assets/78673312/ee25035d-7a5b-4eab-b0cf-08f19c5550dd" width="300" height="200">
-<img src="https://github.com/ibra-mboula/IOT-LoRa-LoRaWAN/assets/78673312/8652f226-8812-44d0-9288-8ff578df2ae5" width="300" height="200">
-<img src="https://github.com/ibra-mboula/IOT-LoRa-LoRaWAN/assets/78673312/8f7f0d96-9d86-4602-9c43-7c20c81f9f6b" width="300" height="200">
-<img src="https://github.com/ibra-mboula/IOT-LoRa-LoRaWAN/assets/78673312/ecf710aa-e7b6-47f7-8d41-9e84a2cdb34e" width="300" height="200">
-<img src="https://github.com/ibra-mboula/IOT-LoRa-LoRaWAN/assets/78673312/57047583-9241-4ec5-ab73-cc0c0a001d67" width="300" height="200">
+<img src="https://github.com/ibra-mboula/IOT-LoRa-LoRaWAN/assets/78673312/90966a8d-7d95-4748-969c-d8111584787f" width="250" height="600">
+<img src="https://github.com/ibra-mboula/IOT-LoRa-LoRaWAN/assets/78673312/ee25035d-7a5b-4eab-b0cf-08f19c5550dd" width="300" height="600">
+<img src="https://github.com/ibra-mboula/IOT-LoRa-LoRaWAN/assets/78673312/8652f226-8812-44d0-9288-8ff578df2ae5" width="300" height="600">
+<img src="https://github.com/ibra-mboula/IOT-LoRa-LoRaWAN/assets/78673312/8f7f0d96-9d86-4602-9c43-7c20c81f9f6b" width="300" height="600">
+<img src="https://github.com/ibra-mboula/IOT-LoRa-LoRaWAN/assets/78673312/ecf710aa-e7b6-47f7-8d41-9e84a2cdb34e" width="300" height="600">
+<img src="https://github.com/ibra-mboula/IOT-LoRa-LoRaWAN/assets/78673312/57047583-9241-4ec5-ab73-cc0c0a001d67" width="300" height="600">
