@@ -4,8 +4,7 @@
 
 Ce projet est une application mobile qui permet aux utilisateurs de partager et découvrir des recettes de cuisine. La page d'accueil regroupe les recettes publiées par d'autres utilisateurs, offrant une expérience communautaire riche.
 
-<p style="color: red;">**NB : Les images actuellement présentes sont des placeholders pour des démonstrations et seront remplacées par de véritables photos de recettes prises par les utilisateurs**
-</p>
+**NB : Les images actuellement présentes sont des placeholders pour des démonstrations et seront remplacées par de véritables photos de recettes prises par les utilisateurs**
 
 ## Fonctionnalités
 
